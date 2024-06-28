@@ -13,9 +13,14 @@ import { Employee } from './employees/entities/employee.entity';
 import { VisitorsModule } from './visitors/visitors.module';
 import { Visitor } from './visitors/entities/visitor.entity';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { User } from './users/entities/user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ExhibitorsModule, ExhibitionsModule, EmployeesModule, VisitorsModule]),
+  imports: [TypeOrmModule.forFeature([ExhibitorsModule, ExhibitionsModule, EmployeesModule, VisitorsModule, UsersModule, AuthModule, JwtModule]),
   ConfigModule.forRoot(),
   TypeOrmModule.forRoot({
     type: 'mysql',
@@ -25,7 +30,7 @@ import { ConfigModule } from '@nestjs/config';
     password: '',
     database: 'test',
     charset: 'utf8mb4',
-    entities: [Exhibitor, Exhibition, Employee, Visitor],
+    entities: [Exhibitor, Exhibition, Employee, Visitor, User],
     synchronize: true,
   }), 
   ExhibitionsModule, ExhibitorsModule,
@@ -33,8 +38,11 @@ import { ConfigModule } from '@nestjs/config';
     rootPath: join(__dirname, '..'),
   }),
   EmployeesModule,
-  VisitorsModule],
+  VisitorsModule,
+  UsersModule,
+  AuthModule,
+  JwtModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtAuthGuard],
 })
 export class AppModule {}
