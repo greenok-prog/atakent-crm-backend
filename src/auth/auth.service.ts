@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from 'src/users/entities/user.entity';
+import { env } from 'process';
 
 
 @Injectable()
@@ -12,7 +13,15 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
+    
+    
     const user = await this.usersService.findByEmail(email);
+  
+    
+
+    
+   
+    
     
     if (user && user.password === password) {
       const { password, ...result } = user;
@@ -22,6 +31,7 @@ export class AuthService {
   }
   async generateAccessToken(user: User): Promise<string> {
     const payload = { email: user.email, id: user.id, name: user.name, roles:user.roles };
+    
     return this.jwtService.sign(payload, {
       secret:process.env.SECRET_ACCESS
     });
@@ -46,9 +56,13 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id, roles: user.roles };
     const result = await this.validateUser(user.email, user.password)
     
+    
+    
     if(result){
         return {
-            access_token: this.jwtService.sign(payload),
+            access_token: this.jwtService.sign(payload, {
+              secret:env.SECRET_ACCESS
+            }),
           };    
     }
   }

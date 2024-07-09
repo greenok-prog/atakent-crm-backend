@@ -12,10 +12,12 @@ export class ExhibitionsService {
     private ExhibitionRepository: Repository<Exhibition>
 
   ){}
+
   async create(dto: CreateExhibitionDto) {
+    
     let newExhibition = this.ExhibitionRepository.create(dto)
-    newExhibition = await this.ExhibitionRepository.save(newExhibition)
-    return newExhibition
+    return await this.ExhibitionRepository.save(newExhibition)
+   
   }
 
   findAll() {
@@ -33,6 +35,6 @@ export class ExhibitionsService {
   }
 
   async remove(id: number) {
-    await this.ExhibitionRepository.delete(id)
+    return await this.ExhibitionRepository.delete(id)
   }
 }

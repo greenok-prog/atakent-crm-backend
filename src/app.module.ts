@@ -16,7 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './users/entities/user.entity';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
@@ -31,7 +31,8 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     database: 'test',
     charset: 'utf8mb4',
     entities: [Exhibitor, Exhibition, Employee, Visitor, User],
-    synchronize: true,
+    synchronize:true
+    
   }), 
   ExhibitionsModule, ExhibitorsModule,
   ServeStaticModule.forRoot({
@@ -43,6 +44,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
   AuthModule,
   JwtModule],
   controllers: [AppController],
-  providers: [AppService, JwtAuthGuard],
+  providers: [AppService, JwtAuthGuard, JwtService],
+  
 })
 export class AppModule {}

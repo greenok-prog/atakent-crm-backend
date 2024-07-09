@@ -14,10 +14,14 @@ export class Exhibition {
     @ApiProperty({description:'Exhibition name', nullable:true})
     name:string
 
+    @Column()
+    @ApiProperty({description:'Exhibition ticket bg', nullable:true})
+    ticketUrl:string
+
     @OneToMany(() => Exhibitor, (exhibitor) => exhibitor.exhibitionId)
     exhibitors:Exhibitor[]
 
-    @OneToMany(() => Visitor, (visitor) => visitor.exhibiton)
+    @OneToMany(() => Visitor, (visitor) => visitor.exhibitionId, )
     visitors:Visitor[]
 
 

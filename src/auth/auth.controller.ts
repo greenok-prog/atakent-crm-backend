@@ -27,32 +27,39 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() createUserDto: CreateUserDto) {
-
+    
+    
     const user = await this.authService.validateUser(createUserDto.email, createUserDto.password);
+    console.log(user);
+    
+    
+    
     
     if (!user) {
       return {message:'Данный пользователь не найден'}
     }
-    const accessToken = await this.authService.generateAccessToken(user);
-    const refreshToken = await this.authService.generateRefreshToken(user);
-    
-    
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      user:{
-        email:user.email,
-        name:user.name,
-        roles:user.roles
+   else{
+      const accessToken = await this.authService.generateAccessToken(user);
+      const refreshToken = await this.authService.generateRefreshToken(user);
+      return {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        user:{
+          email:user.email,
+          name:user.name,
+          roles:user.roles
+        }
       }
     };
   }
   @Post('me')
   async me(@Body('access_token') access:string){
-    const decodetToken = await this.authService.verifyRefreshToken(access)
-    const accessToken = await this.authService.generateAccessToken(decodetToken);
-    const refreshToken = await this.authService.generateRefreshToken(decodetToken);
+    const decodetToken = await this.authService.verifyRefreshToken(access)  
+    
     if(decodetToken){
+      const accessToken = await this.authService.generateAccessToken(decodetToken);
+      const refreshToken = await this.authService.generateRefreshToken(decodetToken);
+      
       return {
         access_token: accessToken,
         refresh_token: refreshToken,

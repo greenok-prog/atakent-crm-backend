@@ -62,7 +62,7 @@ export class Visitor {
     exhibitionId:number
 
     @ApiProperty({description:'Exhibition', nullable:true})
-    @ManyToOne(() => Exhibition, (exhibition) => exhibition.id)
+    @ManyToOne(() => Exhibition, (exhibition) => exhibition.visitors, {onDelete:'CASCADE', onUpdate:'CASCADE'})
     @JoinColumn({name:'exhibition_id'})
     exhibiton:Exhibition
 
