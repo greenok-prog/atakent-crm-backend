@@ -18,7 +18,6 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.findByEmail(createUserDto.email)
   
-    
     if(user){
       return { message:'Пользователь уже есть' }
     }
@@ -27,18 +26,13 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() createUserDto: CreateUserDto) {
-    
-    
     const user = await this.authService.validateUser(createUserDto.email, createUserDto.password);
-    console.log(user);
-    
-    
-    
     
     if (!user) {
       return {message:'Данный пользователь не найден'}
     }
-   else{
+
+    else{
       const accessToken = await this.authService.generateAccessToken(user);
       const refreshToken = await this.authService.generateRefreshToken(user);
       return {
@@ -76,6 +70,7 @@ export class AuthController {
   async refresh(@Body('refresh_token') refreshToken: string) {
     // Проверяем и декодируем refresh токен
     const decoded = this.authService.verifyRefreshToken(refreshToken);
+    
     if (!decoded) {
       return { message: 'Invalid refresh token' };
     }

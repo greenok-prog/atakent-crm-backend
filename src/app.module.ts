@@ -24,14 +24,14 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
   ConfigModule.forRoot(),
   TypeOrmModule.forRoot({
     type: 'mysql',
-    host: 'localhost',
+    host: 'vh356.timeweb.ru',
     port: 3306,
-    username: 'root',
-    password: '',
-    database: 'test',
+    username: 'atakent_crm',
+    password: 'Bravo_314',
+    database: 'atakent_crm',
     charset: 'utf8mb4',
     entities: [Exhibitor, Exhibition, Employee, Visitor, User],
-    synchronize:true
+    // synchronize:true
     
   }), 
   ExhibitionsModule, ExhibitorsModule,

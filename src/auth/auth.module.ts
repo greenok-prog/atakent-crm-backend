@@ -11,11 +11,11 @@ import { PassportModule } from '@nestjs/passport';
     UsersModule, // импортируем UsersModule для доступа к UsersService
     PassportModule,
     JwtModule.register({
-      secret: process.env.SECRET_ACCESS, // замените на ваш секретный ключ JWT
+      secret: `${process.env.SECRET_ACCESS}`, // замените на ваш секретный ключ JWT
       signOptions: { expiresIn: '1h' }, // настройки подписи JWT токена
     }),
     JwtModule.register({
-      secret: process.env.SECRET_ACCESS, // секретный ключ для refresh токена
+      secret: `${process.env.SECRET_REFRESH}`, // секретный ключ для refresh токена
       signOptions: {
         expiresIn: '7d', // время жизни refresh токена (например, 7 дней)
       },

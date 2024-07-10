@@ -33,13 +33,14 @@ export class AuthService {
     const payload = { email: user.email, id: user.id, name: user.name, roles:user.roles };
     
     return this.jwtService.sign(payload, {
-      secret:process.env.SECRET_ACCESS
+      secret:`${process.env.SECRET_ACCESS}`
     });
   }
   async verifyRefreshToken(refreshToken: string): Promise<any | null> {
+
     try {
       const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.SECRET_ACCESS, // используйте тот же секретный ключ, что и при создании refresh токена
+        secret:process.env.SECRET_REFRESH, // используйте тот же секретный ключ, что и при создании refresh токена
       });
       return decoded;
     } catch (error) {
@@ -50,13 +51,11 @@ export class AuthService {
   }
   async generateRefreshToken(user: User): Promise<string> {
     const payload = { email: user.email, id: user.id, name: user.name, roles:user.roles };
-    return this.jwtService.sign(payload, { expiresIn: '7d' });
+    return this.jwtService.sign(payload, { expiresIn: '7d', secret: process.env.SECRET_REFRESH});
   }
   async login(user: User) {
     const payload = { email: user.email, sub: user.id, roles: user.roles };
     const result = await this.validateUser(user.email, user.password)
-    
-    
     
     if(result){
         return {

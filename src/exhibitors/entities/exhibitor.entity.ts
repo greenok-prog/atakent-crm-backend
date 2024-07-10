@@ -48,7 +48,7 @@ export class Exhibitor {
     employees:Employee[]
 
     @ApiProperty({description:'Exhibition', nullable:true})
-    @ManyToOne(() => Exhibition, (exhibition) => exhibition.id)
+    @ManyToOne(() => Exhibition, (exhibition) => exhibition.id, {onDelete:'CASCADE', onUpdate:'CASCADE'})
     @JoinColumn({name:'exhibition_id'})
     exhibiton:Exhibition
 
