@@ -28,7 +28,12 @@ const sqliteConnectionSettings = {
 @Module({
   imports: [TypeOrmModule.forFeature([ExhibitorsModule, ExhibitionsModule, EmployeesModule, VisitorsModule, UsersModule, AuthModule, JwtModule]),
   ConfigModule.forRoot(),
-  TypeOrmModule.forRoot(sqliteConnectionSettings),
+  TypeOrmModule.forRoot({
+    type: 'sqlite',
+    database: 'database.sqlite', // путь к вашей базе данных
+    entities: [Exhibitor, Exhibition, Employee, Visitor, User],
+    synchronize: true, // автоматически создавать/обновлять таблицы
+  }),
   // TypeOrmModule.forRoot({
   //   type: 'mysql',
   //   host: 'vh356.timeweb.ru',
