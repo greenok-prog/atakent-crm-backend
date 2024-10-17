@@ -19,21 +19,29 @@ import { User } from './users/entities/user.entity';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
+const sqliteConnectionSettings = {
+  type: 'sqlite',
+  database: 'database.sqlite', // путь к вашей базе данных
+  entities: [Exhibitor, Exhibition, Employee, Visitor, User],
+  synchronize: true, // автоматически создавать/обновлять таблицы
+}
 @Module({
   imports: [TypeOrmModule.forFeature([ExhibitorsModule, ExhibitionsModule, EmployeesModule, VisitorsModule, UsersModule, AuthModule, JwtModule]),
   ConfigModule.forRoot(),
-  TypeOrmModule.forRoot({
-    type: 'mysql',
-    host: 'vh356.timeweb.ru',
-    port: 3306,
-    username: 'atakent_crm',
-    password: 'Bravo_314',
-    database: 'atakent_crm',
-    charset: 'utf8mb4',
-    entities: [Exhibitor, Exhibition, Employee, Visitor, User],
-    // synchronize:true
+  TypeOrmModule.forRoot(sqliteConnectionSettings),
+  // TypeOrmModule.forRoot({
+  //   type: 'mysql',
+  //   host: 'vh356.timeweb.ru',
+  //   port: 3306,
+  //   username: 'atakent_crm',
+  //   password: 'Bravo_314',
+  //   database: 'atakent_crm',
+  //   charset: 'utf8mb4',
+    // entities: [Exhibitor, Exhibition, Employee, Visitor, User],
+  //   synchronize:true
     
-  }), 
+  // }), 
+  
   ExhibitionsModule, ExhibitorsModule,
   ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..'),
