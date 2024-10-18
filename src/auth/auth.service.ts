@@ -17,6 +17,12 @@ export class AuthService {
     
     const user = await this.usersService.findByEmail(email);
   
+    
+
+    
+   
+    
+    
     if (user && user.password === password) {
       const { password, ...result } = user;
       return result;

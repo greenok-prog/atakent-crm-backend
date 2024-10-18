@@ -19,7 +19,7 @@ export class AuthController {
     const user = await this.usersService.findByEmail(createUserDto.email)
   
     if(user){
-      throw new HttpException('Данный пользователь уже существует', HttpStatus.NOT_FOUND)
+      return { message:'Пользователь уже есть' }
     }
     return this.usersService.create(createUserDto);
   }
@@ -29,7 +29,7 @@ export class AuthController {
     const user = await this.authService.validateUser(createUserDto.email, createUserDto.password);
     
     if (!user) {
-      throw new HttpException('Неверный логин или пароль', HttpStatus.NOT_FOUND)
+      return {message:'Данный пользователь не найден'}
     }
 
     else{
@@ -49,6 +49,8 @@ export class AuthController {
   @Post('me')
   async me(@Body('access_token') access:string){
     const decodetToken = await this.authService.verifyRefreshToken(access)  
+    console.log('auai');
+    
     if(decodetToken){
       const accessToken = await this.authService.generateAccessToken(decodetToken);
       const refreshToken = await this.authService.generateRefreshToken(decodetToken);
@@ -71,13 +73,13 @@ export class AuthController {
     const decoded = this.authService.verifyRefreshToken(refreshToken);
     
     if (!decoded) {
-      throw new HttpException('Неверный refresh токен', HttpStatus.NOT_FOUND)
+      return { message: 'Invalid refresh token' };
     }
     
     // Извлекаем пользователя из refresh токена
     const user = await this.authService.validateUserByJwt(decoded);
     if (!user) {
-      throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND)
+      return { message: 'User not found' };
     }
 
     // Генерируем новый access токен

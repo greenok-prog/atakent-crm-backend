@@ -45,11 +45,7 @@ export class ExhibitorsController {
   findOne(@Param('id') id: string) {
     return this.exhibitorsService.findOne(+id);
   }
-  @Get(':token/confirm')
-  verifyEmail(@Param('token') token: string) {
-    return this.exhibitorsService.verifyEmail(token)
-  }
-  
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateExhibitorDto: UpdateExhibitorDto) {
     return this.exhibitorsService.update(+id, updateExhibitorDto);

@@ -36,18 +36,10 @@ export class Exhibitor {
     @Column()
     @ApiProperty({description:'Exhibitor facebook', nullable:true})
     facebook:string
-   
+
     @Column()
     @ApiProperty({description:'Exhibitor website', nullable:true})
     website:string
-
-    @Column()
-    @ApiProperty({description:'Exhibitor password', nullable:true})
-    password:string
-
-    @Column()
-    @ApiProperty({description:'Exhibitor email is verified', nullable:true})
-    verified:boolean
 
     @Column({name:'exhibition_id'})
     exhibitionId:number
