@@ -26,4 +26,5 @@ export class CreateExhibitorDto {
 
     @ApiProperty({description:'Exhibitor website', nullable:true})
     website:string
+
 }

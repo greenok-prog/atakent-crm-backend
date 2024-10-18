@@ -3,7 +3,7 @@ import { CreateVisitorDto } from './dto/create-visitor.dto';
 import { UpdateVisitorDto } from './dto/update-visitor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Visitor } from './entities/visitor.entity';
-import { Repository } from 'typeorm';
+import { Between, Equal, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import * as qr from 'qrcode';
 import * as fs from 'fs-extra'
 import * as sharp from 'sharp';
@@ -12,6 +12,17 @@ import * as path from 'path';
 import { createReadStream, readFileSync } from 'fs';
 import { join } from 'path';
 import { Exhibition } from 'src/exhibitions/entities/exhibition.entity';
+import { PDFDocument, rgb } from 'pdf-lib';
+import { readFile } from 'fs/promises';
+import { addYears, format } from 'date-fns';
+
+interface FindAllQueries{
+  exhibition:number,
+  fair:string,
+  registrationDateStart:Date,
+  registrationDateEnd:Date,
+  firstDate:Date
+}
 
 @Injectable()
 export class VisitorsService {
@@ -24,7 +35,7 @@ export class VisitorsService {
   ){}
   async generateQR(bgImage:string, data): Promise<any> {
     const uniqId = uuidv4()
-    const qrData = process.env.BASE_URL + `/visitors/change?uuid=${uniqId}`
+    const qrData = process.env.CLIENT_URL + `/visitor/qr?uuid=${uniqId}`
     
     
     const qrCodeBuffer = await qr.toBuffer(qrData, { errorCorrectionLevel: 'H', type:'png', width:2150, heigth:2150, margin:1 });
@@ -66,33 +77,82 @@ export class VisitorsService {
   }
   
 
-  findAll(query) {
-    const {exhibition} = query
-    return this.VisitorRepository.find({
+  async findAll(query:FindAllQueries) {
+    const {exhibition, firstDate, fair, registrationDateStart, registrationDateEnd} = query
+    
+    
+    const registerStart = registrationDateStart ? new Date(registrationDateStart).toISOString() : null
+    const registerEnd = registrationDateEnd ? new Date(registrationDateEnd).toISOString() : null
+    
+    
+    const visitors = await this.VisitorRepository.find({
       where:{
-        exhibitionId:exhibition
+        exhibitionId:exhibition,
+        // firstScanDate:Equal(firstDate),
+        fair:fair,
+        date: registerStart && registerEnd ? Between(new Date(registerStart), new Date(registerEnd)) : null
+       
       },
       relations:{
         exhibiton:true
       },
       order:{
         date:{
-          direction:'DESC'
+          direction:'DESC',
+        
         }
       }
       
     })
+   
+    return visitors
+    
   }
-  async changeQrValue(id){
-    const visitor = await this.VisitorRepository.findOne({ where: { qrValue: `/public/qr/${id}.png` } });
+  async createPdf(firstname:string): Promise<Buffer> {
+    // Создаем новый PDF документ
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 900]);
+    const { width, height } = page.getSize();
+    const imagePath = join(__dirname, '..', 'public', 'test', 'badge.png');
+    const imageBytes = await readFile(imagePath);
+    const image = await pdfDoc.embedPng(imageBytes);
+    const imageDims = image.scale(1); // Используйте масштабирование по необходимости
+    page.drawImage(image, {
+      x: 0,
+      y: 0,
+      width: 200,
+      height: 400,
+    });
 
-  if (visitor) {
-    visitor.qr = true; // Предположим, у Visitor есть поле scanned
-    await this.VisitorRepository.save(visitor);
-    return true;
-  } else {
-    return false;
+    // Добавляем текст поверх изображения
+    page.drawText(`${firstname}`, {
+      x: 50,
+      y: height - 100, // Позиция текста от верхнего края страницы
+      size: 30,
+      color: rgb(0, 0, 0),
+      
+    });
+
+    // Сохраняем PDF документ в формате Uint8Array
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
   }
+  async changeQrValue(id:number){
+    const visitor = await this.VisitorRepository.findOne({ where: { qrValue: `/public/qr/${id}.png` } });
+    
+    
+  if (visitor) {
+    if(visitor.firstScanDate){
+      return visitor
+    }else{
+      visitor.qr = true; // Предположим, у Visitor есть поле scanned
+      visitor.firstScanDate = new Date()
+      await this.VisitorRepository.save(visitor);
+      
+    }
+    return visitor
+  }
+
     
   }
   async findOne(id: number) {

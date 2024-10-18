@@ -61,6 +61,10 @@ export class Visitor {
     @Column({name:'exhibition_id'})
     exhibitionId:number
 
+    @Column({default:null})
+    @ApiProperty({description:'Visitor first time enter date', nullable:true})
+    firstScanDate:Date
+
     @ApiProperty({description:'Exhibition', nullable:true})
     @ManyToOne(() => Exhibition, (exhibition) => exhibition.visitors, {onDelete:'CASCADE', onUpdate:'CASCADE'})
     @JoinColumn({name:'exhibition_id'})

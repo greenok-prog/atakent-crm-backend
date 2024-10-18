@@ -22,9 +22,18 @@ export class VisitorsController {
     return this.visitorsService.findAll(query);
   }
   @Get("/change")
-  changeQr(@Query() query) {
+  async changeQr(@Query() query, @Res() res: Response) {
     const {id} = query
-    return this.visitorsService.changeQrValue(id);
+    const visitorInfo = await this.visitorsService.changeQrValue(id);
+    // const pdfBuffer = await this.visitorsService.createPdf(visitorInfo.name);
+    
+    // // Устанавливаем заголовки для загрузки файла
+    // res.setHeader('Content-Disposition', 'attachment; filename="example.pdf"');
+    // res.setHeader('Content-Type', 'application/pdf');
+    
+    // // Отправляем PDF файл
+    // res.send(pdfBuffer);
+    return visitorInfo
   }
 
   @Get(':id')
