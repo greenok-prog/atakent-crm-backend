@@ -6,7 +6,7 @@ import { Visitor } from './entities/visitor.entity';
 import { Repository } from 'typeorm';
 import * as qr from 'qrcode';
 import * as fs from 'fs-extra'
-import * as sharp from 'sharp';
+// import * as sharp from 'sharp';
 import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
 import * as path from 'path';
 import { createReadStream, readFileSync } from 'fs';
@@ -53,16 +53,16 @@ export class VisitorsService {
     const position = { top: 220, left: 100 };
    
     // Load images
-    const qrImage = sharp(imagePath);
+    // const qrImage = sharp(imagePath);
     const svgText = `<svg>
       <text x="${position.left}" y="${position.top}" font-family="${font.file}" font-size="${200}px" font-weight="bold" fill="${font.color}">AutoExpo - 2024</text></svg>`;
-    const backgroundImage = sharp(bgPath);
+    // const backgroundImage = sharp(bgPath);
 
     // Composite images (assuming both are the same dimensions)
     // {input:Buffer.from(svgText), top:120, left:20, level:1}
-    await backgroundImage
-      .composite([{ input: await qrImage.toBuffer(), level:0 }, ])
-      .toFile(imagePath);
+    // await backgroundImage
+    //   .composite([{ input: await qrImage.toBuffer(), level:0 }, ])
+    //   .toFile(imagePath);
   }
   
 

@@ -31,7 +31,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
   //   database: 'atakent_crm',
   //   charset: 'utf8mb4',
   //   entities: [Exhibitor, Exhibition, Employee, Visitor, User],
-  //   // synchronize:true
+  //   synchronize:true  
     
   // }), 
   TypeOrmModule.forRoot({
