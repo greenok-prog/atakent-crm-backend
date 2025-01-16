@@ -15,6 +15,30 @@ export class Exhibition {
     name:string
 
     @Column()
+    @ApiProperty({description:'Exhibitions description', nullable:true})
+    description:string
+
+    @Column()
+    @ApiProperty({description:'Exhibitions description', nullable:true})
+    location:string
+
+    @Column()
+    @ApiProperty({description:'Exhibitions website', nullable:true})
+    website:string
+
+    @Column()
+    @ApiProperty({description:'Exhibition start date', nullable:true})
+    dateStart:Date
+
+    @Column()
+    @ApiProperty({description:'Exhibition end date', nullable:true})
+    dateEnd:Date
+
+    @Column()
+    @ApiProperty({description:'Exhibition image', nullable:true})
+    image:string
+
+    @Column()
     @ApiProperty({description:'Exhibition ticket bg', nullable:true})
     ticketUrl:string
 

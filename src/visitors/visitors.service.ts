@@ -3,10 +3,10 @@ import { CreateVisitorDto } from './dto/create-visitor.dto';
 import { UpdateVisitorDto } from './dto/update-visitor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Visitor } from './entities/visitor.entity';
-import { Repository } from 'typeorm';
+import { Between, Equal, LessThanOrEqual, Repository } from 'typeorm';
 import * as qr from 'qrcode';
 import * as fs from 'fs-extra'
-// import * as sharp from 'sharp';
+import * as sharp from 'sharp';
 import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
 import * as path from 'path';
 import { createReadStream, readFileSync } from 'fs';
@@ -27,7 +27,7 @@ export class VisitorsService {
     const qrData = process.env.BASE_URL + `/visitors/change?uuid=${uniqId}`
     
     
-    const qrCodeBuffer = await qr.toBuffer(qrData, { errorCorrectionLevel: 'H', type:'png', width:2150, heigth:2150, margin:1 });
+    const qrCodeBuffer = await qr.toBuffer(qrData, { errorCorrectionLevel: 'H', type:'png', width:540, heigth:540, margin:1 });
     const qrImagePath = `./public/qr/${uniqId}.png`;
     const staticPath = `/public/qr/${uniqId}.png`
    
@@ -36,44 +36,57 @@ export class VisitorsService {
     await fs.writeFile(qrImagePath, qrCodeBuffer);
 
     // Add background to QR code image
-    await this.addBackgroundToImage(qrImagePath, bgImage);
+    // await this.addBackgroundToImage(qrImagePath, bgImage);
 
     return {staticPath:staticPath, path:qrImagePath};
   }
   async create(createVisitorDto: CreateVisitorDto) {
     const exhibition = await this.ExhibitionRepository.findOneBy({id:createVisitorDto.exhibition})
     const {staticPath} = await this.generateQR(exhibition.ticketUrl, createVisitorDto)
-    const visitor = this.VisitorRepository.create({...createVisitorDto, date:new Date(), exhibitionId:createVisitorDto.exhibition,qrValue:staticPath})
-
+    const visitor = this.VisitorRepository.create({...createVisitorDto, date:new Date(), exhibitionId:createVisitorDto.exhibition,qrValue:staticPath, exhibition:exhibition})
+    
+    
     return await this.VisitorRepository.save(visitor) 
   }
 
-  async addBackgroundToImage(imagePath: string, bgPath:string = '/public/exhibitions/qr.png') {
-    const font = { file: 'Arial', size: 86, color: 'black' }; // Adjust font properties
-    const position = { top: 220, left: 100 };
+  // async addBackgroundToImage(imagePath: string, bgPath:string = '/public/exhibitions/qr.png') {
+  //   const font = { file: 'Arial', size: 86, color: 'black' }; // Adjust font properties
+  //   const position = { top: 220, left: 100 };
    
-    // Load images
-    // const qrImage = sharp(imagePath);
-    const svgText = `<svg>
-      <text x="${position.left}" y="${position.top}" font-family="${font.file}" font-size="${200}px" font-weight="bold" fill="${font.color}">AutoExpo - 2024</text></svg>`;
-    // const backgroundImage = sharp(bgPath);
+  //   // Load images
+  //   const qrImage = sharp(imagePath);
+  //   const svgText = `<svg>
+  //     <text x="${position.left}" y="${position.top}" font-family="${font.file}" font-size="${200}px" font-weight="bold" fill="${font.color}">AutoExpo - 2024</text></svg>`;
+  //   const backgroundImage = sharp(bgPath);
 
-    // Composite images (assuming both are the same dimensions)
-    // {input:Buffer.from(svgText), top:120, left:20, level:1}
-    // await backgroundImage
-    //   .composite([{ input: await qrImage.toBuffer(), level:0 }, ])
-    //   .toFile(imagePath);
-  }
+  //   // Composite images (assuming both are the same dimensions)
+  //   // backgroundImage{input:Buffer.from(svgText), top:120, left:20, level:1}
+  //   await backgroundImage
+  //     .composite([{ input: await qrImage.toBuffer(), level:0 }, ])
+  //     .toFile(imagePath);
+  // }
   
 
   findAll(query) {
-    const {exhibition} = query
+    const {exhibition, fair, registrationDateStart, registrationDateEnd} = query
+    
+    const registrationDateFilter = () => {
+      const hasRegistrationDates = registrationDateStart && registrationDateEnd
+     
+      if(hasRegistrationDates){
+        return Between(registrationDateStart, registrationDateEnd)
+      }
+      return null
+    }
     return this.VisitorRepository.find({
       where:{
-        exhibitionId:exhibition
+        exhibitionId:exhibition,
+        fair: fair,
+        date:registrationDateFilter()
+        
       },
       relations:{
-        exhibiton:true
+        exhibition:true
       },
       order:{
         date:{
