@@ -15,7 +15,7 @@ export class SourcesService {
 
   create(createSourceDto: CreateSourceDto) {
     const source = this.SourceRepository.create(createSourceDto)
-    return source
+    return this.SourceRepository.save(source)
   }
 
   findAll() {
@@ -26,11 +26,14 @@ export class SourcesService {
     return `This action returns a #${id} source`;
   }
 
-  update(id: number, updateSourceDto: UpdateSourceDto) {
-    return `This action updates a #${id} source`;
+  async update(id: number, updateSourceDto: UpdateSourceDto) {
+    await this.SourceRepository.update(id, updateSourceDto);
+    const source = await this.SourceRepository.findOneBy({id})
+    return source
+
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} source`;
+  async remove(id: number) {
+    return await this.SourceRepository.delete(id)
   }
 }

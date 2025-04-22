@@ -20,6 +20,6 @@ export class User {
     password:string
 
     @Column("simple-array")
-    @ApiProperty({description:'User password', nullable:false})
+    @ApiProperty({description:'User roles', nullable:false})
     roles:string[]
 }

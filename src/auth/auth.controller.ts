@@ -49,7 +49,6 @@ export class AuthController {
   @Post('me')
   async me(@Body('access_token') access:string){
     const decodetToken = await this.authService.verifyRefreshToken(access)  
-    console.log('auai');
     
     if(decodetToken){
       const accessToken = await this.authService.generateAccessToken(decodetToken);

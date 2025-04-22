@@ -54,15 +54,18 @@ export class Visitor {
     @ApiProperty({description:'Visitor qr', nullable:true})
     qrValue:string
 
-    @Column()
+    @Column({nullable:true})
     @ApiProperty({description:'Visitor qr value', nullable:true})
     qr:boolean
 
-    @Column({name:'exhibition_id'})
+    @Column({ type: 'uuid', nullable: false, unique: true })
+    uuid: string; 
+
+    @Column({name:'exhibition_id', nullable:true})
     exhibitionId:number
 
     @ApiProperty({description:'Exhibition', nullable:true})
-    @ManyToOne(() => Exhibition, (exhibition) => exhibition.visitors, {onDelete:'CASCADE', onUpdate:'CASCADE'})
+    @ManyToOne(() => Exhibition, (exhibition) => exhibition.visitors, {onDelete:'SET NULL', onUpdate:'CASCADE'})
     @JoinColumn({name:'exhibition_id'})
     exhibition:Exhibition
 

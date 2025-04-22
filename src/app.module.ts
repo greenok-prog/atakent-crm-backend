@@ -20,30 +20,32 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { SourcesModule } from './sources/sources.module';
 import { Source } from './sources/entities/source.entity';
+import { OrganizersModule } from './organizers/organizers.module';
+import { Organizer } from './organizers/entities/organizer.entity';
+import { ScheduleModule } from '@nestjs/schedule';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ExhibitorsModule, ExhibitionsModule, EmployeesModule, VisitorsModule, UsersModule, AuthModule, SourcesModule, JwtModule]),
-  ConfigModule.forRoot(),
+  imports: [TypeOrmModule.forFeature([ExhibitorsModule, ExhibitionsModule, EmployeesModule, VisitorsModule, UsersModule, AuthModule, OrganizersModule, SourcesModule, JwtModule, MailerModule]),
+  ScheduleModule.forRoot(),
+  ConfigModule.forRoot({
+    isGlobal: true,
+    envFilePath: '.env', // делает конфигурацию доступной глобально// путь к вашему .env файлу
+  }),
+  
   TypeOrmModule.forRoot({
-    type: 'mariadb',
+    
+    type: 'postgres',
     host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT) || 3306,
+    port: parseInt(process.env.DB_PORT),
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    charset: 'utf8mb4',
-    entities: [Exhibitor, Exhibition, Employee, Visitor, User, Source],
-    synchronize:true ,
-    autoLoadEntities:true,
-    logging:true
+    entities: [Exhibitor, Exhibition, Employee, Visitor, User, Source, Organizer],
+    synchronize:true  
     
   }), 
-  // TypeOrmModule.forRoot({
-  //   type: 'sqlite',
-  //     database: 'database.sqlite', // Укажите имя вашей базы данных
-  //     entities: [Exhibitor, Exhibition, Employee, Visitor, User],
-  //     synchronize: true, 
-  // }),
+  
   ExhibitionsModule, ExhibitorsModule,
   ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..'),
@@ -53,7 +55,9 @@ import { Source } from './sources/entities/source.entity';
   UsersModule,
   AuthModule,
   JwtModule,
-  SourcesModule],
+  SourcesModule,
+  OrganizersModule,
+  MailerModule],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard, JwtService],
   

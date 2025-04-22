@@ -1,23 +1,19 @@
-# Используем официальный Node.js образ
-FROM node:18
+FROM node:20
 
-# Устанавливаем рабочую директорию
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Копируем package.json и package-lock.json
+# Копируем только package.json для кэширования зависимостей
 COPY package*.json ./
 
 # Устанавливаем зависимости
 RUN npm install
 
-# Копируем все файлы приложения
+# Теперь копируем остальное
 COPY . .
 
 # Собираем приложение
 RUN npm run build
 
-# Указываем команду для запуска приложения
-CMD ["node", "dist/main.js"]
+EXPOSE 8888
 
-# Открываем порт, который будет использовать приложение
-EXPOSE 3000
+CMD ["npm", "run", "start:prod"]
